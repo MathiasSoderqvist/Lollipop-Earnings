@@ -1,7 +1,7 @@
 import React from 'react';
 import InputPage from './InputPage'
 import WelcomePage from './WelcomePage'
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
 const ScrollPages = () => {
 
