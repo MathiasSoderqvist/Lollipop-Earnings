@@ -1,7 +1,7 @@
 import React from 'react';
 import InputPage from './InputPage'
 import WelcomePage from './WelcomePage'
-import { StyleSheet, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 const ScrollPages = () => {
 
@@ -12,10 +12,5 @@ const ScrollPages = () => {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-
-});
- 
 
 export default ScrollPages;

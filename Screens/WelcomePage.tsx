@@ -4,7 +4,6 @@ import { AntDesign } from '@expo/vector-icons';
 import Lollipop from '../assets/img/lollipop.svg'
 import { TouchableOpacity } from 'react-native';
 import { Dimensions } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -12,7 +11,6 @@ const windowHeight = Dimensions.get('window').height;
 const WelcomePage = () => {
 
   const downButtonHandler = () => {
-    // ref.scrollToEnd({ animated: true });
     console.log("pressed");
   };
 
