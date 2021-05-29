@@ -10,11 +10,14 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const InputPage: React.FC = () => {
-  const [value, onChangeValue] = useState<string | undefined>('');
+  const [input, onChangeInput] = useState<string | undefined>('');
   const [coins, setCoins] = useState([]);
   const [daiRate, setDaiRate] = useState<number | undefined>(undefined);
-  const [usdcRate, setUsdcRate] = useState<number | undefined>(undefined);
-  const [usdtRate, setUsdtRate] = useState<number | undefined>(undefined);
+  const [usdcRate, setUSDCRate] = useState<number | undefined>(undefined);
+  const [usdtRate, setUSDTRate] = useState<number | undefined>(undefined);
+  const [daiValue, onChangeDaiValue] = useState<number | null>(100);
+  const [usdcValue, onChangeUSDCValue] = useState<number | null>(100);
+  const [usdtValue, onChangeUSDTValue] = useState<number | null>(100);
   const [blendedInterest, setBlendedInterest] = useState(0);
   const [earnings, setEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -44,14 +47,14 @@ const InputPage: React.FC = () => {
      const getUSDCRate: () => void = () => {
       let res = getRates('USDC');
       let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-      setUsdcRate(rate);
+      setUSDCRate(rate);
     }
       
     
     const getUSDTRate: () => void = () => {
       let res = getRates('USDT');
       let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-      setUsdtRate(rate);
+      setUSDTRate(rate);
     }
     
     useEffect(() => {
@@ -60,7 +63,8 @@ const InputPage: React.FC = () => {
       getUSDTRate();
     }, [loading]);
 
-    console.log(value, typeof(value), "CHANGE")
+    console.log(input, typeof(input), "CHANGE")
+    console.log(daiValue, "DAI")
 
   console.log(daiRate, "DAI", usdtRate, "USDT", usdcRate, "USDC")
 
@@ -69,8 +73,8 @@ const InputPage: React.FC = () => {
       <Text style={styles.amount}>AMOUNT ($USD)</Text>
       <TextInput
         style={styles.input}
-        onChangeText={onChangeValue}
-        value={value}
+        onChangeText={onChangeInput}
+        value={input}
         placeholder="amount"
         keyboardType="numeric"
       />
@@ -80,18 +84,23 @@ const InputPage: React.FC = () => {
       minimumValue={0}
       maximumValue={100}
       value={100}
+      onValueChange={value => onChangeDaiValue(value)}
       />
       <Text>USDC ({usdcRate}%):</Text>
       <Slider 
       style={{width: 200, height: 40}}
       minimumValue={0}
       maximumValue={100}
+      value={0}
+      onValueChange={value => onChangeUSDCValue(value)}
       />
       <Text>USDT ({usdtRate}%):</Text>
       <Slider 
       style={{width: 200, height: 40}}
       minimumValue={0}
       maximumValue={100}
+      value={0}
+      onValueChange={value => onChangeUSDTValue(value)}
       />
     </View>
   );
