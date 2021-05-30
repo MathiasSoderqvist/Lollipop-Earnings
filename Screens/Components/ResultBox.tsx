@@ -9,8 +9,8 @@ interface IProps {
 const ResultBox: React.FC<IProps> = ({blendedInterest, earnings}) => {
   return (
     <View>
-      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', top: '65%'}}>BLENDED RATE: {blendedInterest}%</Text>
-      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', top: '70%'}}>APY: ${earnings}</Text>
+      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', top: '65%'}}>Blended Rate: {blendedInterest}%</Text>
+      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', top: '70%'}}>1-Year Earnings: ${earnings}</Text>
     </View>
   )
 }

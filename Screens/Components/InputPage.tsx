@@ -215,10 +215,10 @@ const InputPage: React.FC = () => {
           <USDC /> USDC ({usdcRate}% APY)        {usdcValue[0].toFixed(2)}%
         </Text>
         <MultiSlider 
-        values={defaultValUSDC}
-        max={100}
-        step={0.1}
-        onValuesChangeFinish={(values) => checkMaxSliderValue('USDC', values)}
+          values={defaultValUSDC}
+          max={100}
+          step={0.1}
+          onValuesChangeFinish={(values) => checkMaxSliderValue('USDC', values)}
         />
         <Text style={{
           fontFamily: 'Raleway_400Regular', 
