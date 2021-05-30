@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, unstable_batchedUpdates } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
 import FetchRequest from '../../Services/ApiClient';
@@ -7,12 +7,13 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import Dai from '../../assets/img/dai.svg';
 import USDC from '../../assets/img/usdc.svg';
 import USDT from '../../assets/img/usdt.svg';
+import ResultBox from './ResultBox';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const InputPage: React.FC = () => {
-  const [input, onChangeInput] = useState<string>('100');
+  const [input, onChangeInput] = useState<string>('1000');
   const [coins, setCoins] = useState([]);
   const [daiRate, setDaiRate] = useState<number | undefined>(undefined);
   const [usdcRate, setUSDCRate] = useState<number | undefined>(undefined);
@@ -42,8 +43,8 @@ const InputPage: React.FC = () => {
     getDaiRate();
     getUSDCRate();
     getUSDTRate();
-    setBlendedInterest(daiRate);
-    setEarnings(daiRate*parseInt(input));
+    // setBlendedInterest(daiRate);
+    // setEarnings(daiRate*parseInt(input));
   }, [loading]);
 
   useEffect(() => {
@@ -158,12 +159,12 @@ const InputPage: React.FC = () => {
       let dai = daiRate / 100;
       let usdc = usdcRate / 100;
       let usdt = usdtRate / 100;
-      let daiAmount = getPercentageValue(daiValue[0]).toFixed(2);
-      let usdcAmount = getPercentageValue(usdcValue[0]).toFixed(2);
-      let usdtAmount = getPercentageValue(usdtValue[0]).toFixed(2);
-      let sum = parseInt(daiAmount) + parseInt(usdcAmount) + parseInt(usdtAmount);
-
-      let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / sum;
+      let daiAmount = parseInt(getPercentageValue(daiValue[0]).toFixed(2)) * dai;
+      let usdcAmount = parseInt(getPercentageValue(usdcValue[0]).toFixed(2)) * usdc;
+      let usdtAmount = parseInt(getPercentageValue(usdtValue[0]).toFixed(2)) * usdt;
+      
+      let blended = ((daiAmount + usdcAmount + usdtAmount) / parseInt(input))*100;
+      
       let blendedFixed = Math.round((blended + Number.EPSILON) * 100) / 100;
 
       setBlendedInterest(blendedFixed);
@@ -178,14 +179,14 @@ const InputPage: React.FC = () => {
     }
   }
 
-    console.log("START:", "TOTAL -", total)
-    console.log(usdcValue[0], "%USDC slider percentage", daiValue[0])
-    console.log(typeof(getPercentageValue(usdcValue[0]).toFixed(2)), "$$ get percentValue")
-    console.log(daiRate, "DAI", usdtRate, "USDT", usdcRate, "USDC")
+    // console.log("START:", "TOTAL -", total)
+    // console.log(usdcValue[0], "%USDC slider percentage", daiValue[0])
+    // console.log(typeof(getPercentageValue(usdcValue[0]).toFixed(2)), "$$ get percentValue")
+    // console.log(daiRate, "DAI", usdtRate, "USDT", usdcRate, "USDC")
 
   return (
     <View style={styles.container}>
-      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center'}}>AMOUNT ($USD)</Text>
+      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', bottom: '5%'}}>AMOUNT ($USD)</Text>
       <TextInput
         style={styles.input}
         onChangeText={onChangeInput}
@@ -231,8 +232,12 @@ const InputPage: React.FC = () => {
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
       />
-      <Text>BLENDED RATE: {blendedInterest}%</Text>
-      <Text>APY: ${earnings}</Text>
+      <View style={styles.resultbox}>
+      <ResultBox 
+      blendedInterest={blendedInterest}
+      earnings={earnings}
+      />
+      </View>
     </View>
   );
 }
@@ -250,11 +255,22 @@ const styles = StyleSheet.create({
     height: '8%',
     minWidth: '35%',
     margin: 12,
-    borderRadius: 3,
-    borderWidth: 1,
+    bottom: '5%',
+    borderBottomWidth : 1.0,
+    borderBottomColor: '#390164',
     textAlign: 'center',
     fontSize: 25,
     color: '#390164',
+  },
+  resultbox: {
+    flex: 1,
+    width: '90%',
+    minHeight: 150,
+    position: 'absolute',
+    bottom: '6%',
+    borderRadius: 20,
+    alignItems: 'center',
+    backgroundColor: "rgba(139, 209, 211, 0.3)",
   }
 });
  
