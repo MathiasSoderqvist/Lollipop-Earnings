@@ -1,6 +1,6 @@
 import React from 'react';
-import InputPage from './InputPage'
-import WelcomePage from './WelcomePage'
+import InputPage from './Components/InputPage'
+import WelcomePage from './Components/WelcomePage'
 import { ScrollView } from 'react-native';
 
 const ScrollPages = () => {

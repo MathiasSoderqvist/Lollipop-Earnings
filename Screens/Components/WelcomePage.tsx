@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; 
-import Lollipop from '../assets/img/lollipop.svg'
+import Lollipop from '../../assets/img/lollipop.svg'
 import { TouchableOpacity } from 'react-native';
 import { Dimensions } from 'react-native';
 
