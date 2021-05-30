@@ -5,7 +5,6 @@ import Lollipop from '../../assets/img/lollipop.svg'
 import { TouchableOpacity } from 'react-native';
 import { Dimensions } from 'react-native';
 
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 

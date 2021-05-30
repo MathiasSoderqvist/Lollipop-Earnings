@@ -33,10 +33,10 @@ const InputPage: React.FC = () => {
   let total = daiValue[0] + usdcValue[0] + usdtValue[0];
 
   useEffect(() => {
-      FetchRequest()
-      .then((json) => setCoins(json.cToken))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+    FetchRequest()
+    .then((json) => setCoins(json.cToken))
+    .catch((error) => console.error(error))
+    .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -75,8 +75,7 @@ const InputPage: React.FC = () => {
     if (total > 100) {
       if (daiValue[0] > amountOver) {
         setDaiValue([daiValue[0] -= amountOver]);
-       } 
-       else {
+      } else {
          setUSDTValue([100 - daiValue[0]]);
          setDaiValue([0]);
         } 
@@ -91,8 +90,7 @@ const InputPage: React.FC = () => {
     let amountOver = total - 100;
     if (usdcValue[0] > amountOver) {
       setUSDCValue([usdcValue[0] -= amountOver]);
-    }
-    else {
+    } else {
       setDaiValue([100 - usdcValue[0]]);
       setUSDCValue([0]);
      }
@@ -101,40 +99,40 @@ const InputPage: React.FC = () => {
       setDefaultValUSDC(usdcValue);
   }, [updatingUSDT]);
  
-    const getRates = (id: string) => {
-      for (let i = 0; i < coins.length; i++) {
-        let coin = coins[i]["underlying_symbol"];
-        if (coin === id) {
-          return coins[i]["supply_rate"]['value']*100;
-        }
+  const getRates = (id: string) => {
+    for (let i = 0; i < coins.length; i++) {
+      let coin = coins[i]["underlying_symbol"];
+      if (coin === id) {
+        return coins[i]["supply_rate"]['value']*100;
       }
     }
+  }
 
-    const getDaiRate: () => void = () => {
-      let res = getRates('DAI');
-      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-      setDaiRate(rate);
-    }
+  const getDaiRate: () => void = () => {
+    let res = getRates('DAI');
+    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+    setDaiRate(rate);
+  }
     
-     const getUSDCRate: () => void = () => {
-      let res = getRates('USDC');
-      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-      setUSDCRate(rate);
-    }
+  const getUSDCRate: () => void = () => {
+    let res = getRates('USDC');
+    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+    setUSDCRate(rate);
+  }
     
-    const getUSDTRate: () => void = () => {
-      let res = getRates('USDT');
-      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-      setUSDTRate(rate);
-    }
+  const getUSDTRate: () => void = () => {
+    let res = getRates('USDT');
+    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+    setUSDTRate(rate);
+  }
 
-    const getPercentageValue = (val: number) => {
-      let amount = parseInt(input);
-      let res = (val / 100) * amount;
-      return res;
-    }
+  const getPercentageValue = (val: number) => {
+    let amount = parseInt(input);
+    let res = (val / 100) * amount;
+    return res;
+  }
 
-    const checkMaxSliderValue = (coin: string, val: number[]) => {
+  const checkMaxSliderValue = (coin: string, val: number[]) => {
     switch (coin) {
       case 'USDC':
         setUSDCValue(val);
@@ -180,59 +178,68 @@ const InputPage: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.rates}>
-      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', bottom: '10%'}}>AMOUNT ($USD)</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeInput}
-        value={input}
-        placeholder="amount"
-        keyboardType="numeric"
-      />
-      <Text style={{
-        fontFamily: 'Raleway_400Regular', 
-        fontSize: 18, 
-        color: '#390164', 
-        textAlign: 'center'
+        <Text style={{
+          fontFamily: 'Raleway_700Bold', 
+          fontSize: 25, color: '#390164', 
+          textAlign: 'center', 
+          bottom: '10%'}}>
+            AMOUNT ($USD)
+        </Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeInput}
+          value={input}
+          placeholder="amount"
+          keyboardType="numeric"
+        />
+        <Text style={{
+          fontFamily: 'Raleway_400Regular', 
+          fontSize: 18, 
+          color: '#390164', 
+          textAlign: 'center'
         }}>
-          <Dai style={styles.logo}/> DAI ({daiRate}% APY)        {daiValue[0].toFixed(2)}%:
-      </Text>
-      <MultiSlider 
-      values={defaultValDAI}
-      max={100}
-      step={0.1}
-      onValuesChangeFinish={(values) => checkMaxSliderValue('DAI', values)}
+          <Dai /> DAI ({daiRate}% APY)        {daiValue[0].toFixed(2)}%
+        </Text>
+        <MultiSlider 
+          values={defaultValDAI}
+          max={100}
+          step={0.1}
+          onValuesChangeFinish={(values) => checkMaxSliderValue('DAI', values)}
+        />
+        <Text style={{
+          fontFamily: 'Raleway_400Regular', 
+          fontSize: 18, 
+          color: '#390164', 
+          textAlign: 'center'
+        }}> 
+          <USDC /> USDC ({usdcRate}% APY)        {usdcValue[0].toFixed(2)}%
+        </Text>
+        <MultiSlider 
+        values={defaultValUSDC}
+        max={100}
+        step={0.1}
+        onValuesChangeFinish={(values) => checkMaxSliderValue('USDC', values)}
+        />
+        <Text style={{
+          fontFamily: 'Raleway_400Regular', 
+          fontSize: 18, 
+          color: '#390164', 
+          textAlign: 'center'
+          }}> 
+          <USDT /> USDT ({usdtRate}% APY)        {usdtValue[0].toFixed(2)}%
+          </Text>
+        <MultiSlider 
+          values={defaultValUSDT}
+          max={100}
+          step={0.1}
+          onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
       />
-      <Text style={{
-        fontFamily: 'Raleway_400Regular', 
-        fontSize: 18, 
-        color: '#390164', 
-        textAlign: 'center'
-        }}> <USDC style={styles.logo}/> USDC ({usdcRate}% APY)        {usdcValue[0].toFixed(2)}%:</Text>
-      <MultiSlider 
-      values={defaultValUSDC}
-      max={100}
-      step={0.1}
-      onValuesChangeFinish={(values) => checkMaxSliderValue('USDC', values)}
-      />
-      <Text style={{
-        fontFamily: 'Raleway_400Regular', 
-        fontSize: 18, 
-        color: '#390164', 
-        textAlign: 'center'
-        }}> <USDT style={styles.logo}/> USDT ({usdtRate}% APY)        {usdtValue[0].toFixed(2)}%:</Text>
-      <MultiSlider 
-      values={defaultValUSDT}
-      max={100}
-      step={0.1}
-      onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
-      />
-
       </View>
       <View style={styles.resultbox}>
-      <ResultBox 
-      blendedInterest={blendedInterest}
-      earnings={earnings}
-      />
+        <ResultBox 
+          blendedInterest={blendedInterest}
+          earnings={earnings}
+        />
       </View>
     </View>
   );
@@ -246,9 +253,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: windowHeight,
     width: windowWidth,
-  },
-  logo: {
-    // paddingLeft: 50,
   },
   rates: {
     alignItems: 'center',
