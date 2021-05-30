@@ -43,8 +43,6 @@ const InputPage: React.FC = () => {
     getDaiRate();
     getUSDCRate();
     getUSDTRate();
-    // setBlendedInterest(daiRate);
-    // setEarnings(daiRate*parseInt(input));
   }, [loading]);
 
   useEffect(() => {
@@ -179,14 +177,10 @@ const InputPage: React.FC = () => {
     }
   }
 
-    // console.log("START:", "TOTAL -", total)
-    // console.log(usdcValue[0], "%USDC slider percentage", daiValue[0])
-    // console.log(typeof(getPercentageValue(usdcValue[0]).toFixed(2)), "$$ get percentValue")
-    // console.log(daiRate, "DAI", usdtRate, "USDT", usdcRate, "USDC")
-
   return (
     <View style={styles.container}>
-      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', bottom: '5%'}}>AMOUNT ($USD)</Text>
+      <View style={styles.rates}>
+      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center', bottom: '10%'}}>AMOUNT ($USD)</Text>
       <TextInput
         style={styles.input}
         onChangeText={onChangeInput}
@@ -196,11 +190,11 @@ const InputPage: React.FC = () => {
       />
       <Text style={{
         fontFamily: 'Raleway_400Regular', 
-        fontSize: 25, 
+        fontSize: 18, 
         color: '#390164', 
         textAlign: 'center'
         }}>
-          <Dai /> DAI ({daiRate}% APY) {daiValue[0].toFixed(2)}%:
+          <Dai style={styles.logo}/> DAI ({daiRate}% APY)        {daiValue[0].toFixed(2)}%:
       </Text>
       <MultiSlider 
       values={defaultValDAI}
@@ -210,10 +204,10 @@ const InputPage: React.FC = () => {
       />
       <Text style={{
         fontFamily: 'Raleway_400Regular', 
-        fontSize: 25, 
+        fontSize: 18, 
         color: '#390164', 
         textAlign: 'center'
-        }}> <USDC /> USDC ({usdcRate}% APY) {usdcValue[0].toFixed(2)}%:</Text>
+        }}> <USDC style={styles.logo}/> USDC ({usdcRate}% APY)        {usdcValue[0].toFixed(2)}%:</Text>
       <MultiSlider 
       values={defaultValUSDC}
       max={100}
@@ -222,16 +216,18 @@ const InputPage: React.FC = () => {
       />
       <Text style={{
         fontFamily: 'Raleway_400Regular', 
-        fontSize: 25, 
+        fontSize: 18, 
         color: '#390164', 
         textAlign: 'center'
-        }}> <USDT /> USDT ({usdtRate}% APY) {usdtValue[0].toFixed(2)}%:</Text>
+        }}> <USDT style={styles.logo}/> USDT ({usdtRate}% APY)        {usdtValue[0].toFixed(2)}%:</Text>
       <MultiSlider 
       values={defaultValUSDT}
       max={100}
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
       />
+
+      </View>
       <View style={styles.resultbox}>
       <ResultBox 
       blendedInterest={blendedInterest}
@@ -251,11 +247,19 @@ const styles = StyleSheet.create({
     height: windowHeight,
     width: windowWidth,
   },
+  logo: {
+    // paddingLeft: 50,
+  },
+  rates: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: '5%'
+  },
   input: {
     height: '8%',
     minWidth: '35%',
     margin: 12,
-    bottom: '5%',
+    bottom: '10%',
     borderBottomWidth : 1.0,
     borderBottomColor: '#390164',
     textAlign: 'center',
@@ -267,11 +271,11 @@ const styles = StyleSheet.create({
     width: '90%',
     minHeight: 150,
     position: 'absolute',
-    bottom: '6%',
+    bottom: '10%',
     borderRadius: 20,
     alignItems: 'center',
     backgroundColor: "rgba(139, 209, 211, 0.3)",
-  }
+  },
 });
  
 export default InputPage;
