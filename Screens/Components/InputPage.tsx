@@ -4,6 +4,9 @@ import { TextInput } from 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
 import FetchRequest from '../../Services/ApiClient';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import Dai from '../../assets/img/dai.svg';
+import USDC from '../../assets/img/usdc.svg';
+import USDT from '../../assets/img/usdt.svg';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -182,7 +185,7 @@ const InputPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.amount}>AMOUNT ($USD)</Text>
+      <Text style={{fontFamily: 'Raleway_700Bold', fontSize: 25, color: '#390164', textAlign: 'center'}}>AMOUNT ($USD)</Text>
       <TextInput
         style={styles.input}
         onChangeText={onChangeInput}
@@ -190,21 +193,38 @@ const InputPage: React.FC = () => {
         placeholder="amount"
         keyboardType="numeric"
       />
-      <Text>DAI ({daiRate}%) {daiValue[0].toFixed(2)}%:</Text>
+      <Text style={{
+        fontFamily: 'Raleway_400Regular', 
+        fontSize: 25, 
+        color: '#390164', 
+        textAlign: 'center'
+        }}>
+          <Dai /> DAI ({daiRate}% APY) {daiValue[0].toFixed(2)}%:
+      </Text>
       <MultiSlider 
       values={defaultValDAI}
       max={100}
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('DAI', values)}
       />
-      <Text>USDC ({usdcRate}%) {usdcValue[0].toFixed(2)}%:</Text>
+      <Text style={{
+        fontFamily: 'Raleway_400Regular', 
+        fontSize: 25, 
+        color: '#390164', 
+        textAlign: 'center'
+        }}> <USDC /> USDC ({usdcRate}% APY) {usdcValue[0].toFixed(2)}%:</Text>
       <MultiSlider 
       values={defaultValUSDC}
       max={100}
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('USDC', values)}
       />
-      <Text>USDT ({usdtRate}%) {usdtValue[0].toFixed(2)}%:</Text>
+      <Text style={{
+        fontFamily: 'Raleway_400Regular', 
+        fontSize: 25, 
+        color: '#390164', 
+        textAlign: 'center'
+        }}> <USDT /> USDT ({usdtRate}% APY) {usdtValue[0].toFixed(2)}%:</Text>
       <MultiSlider 
       values={defaultValUSDT}
       max={100}
@@ -225,11 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: windowHeight,
     width: windowWidth,
-  },
-  amount: {
-    color: '#390164',
-    fontWeight: '700',
-    fontSize: 25,
   },
   input: {
     height: '8%',
