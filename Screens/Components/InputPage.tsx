@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
 import FetchRequest from '../../Services/ApiClient';
-import Slider from '@react-native-community/slider';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import useFloatingHeaderHeight from '@react-navigation/stack/lib/typescript/src/utils/useHeaderHeight';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -19,16 +19,16 @@ const InputPage: React.FC = () => {
   let [daiValue, setDaiValue] = useState<number[]>([100]);
   let [usdcValue, setUSDCValue] = useState<number[]>([0]);
   let [usdtValue, setUSDTValue] = useState<number[]>([0]);
-  const [blendedInterest, setBlendedInterest] = useState(0);
+  const [blendedInterest, setBlendedInterest] = useState<number>(0);
   const [earnings, setEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
   const [updatingUSDC, setUpdatingUSDC] = useState(true);
   const [updatingUSDT, setUpdatingUSDT] = useState(true);
   const [updatingDAI, setUpdatingDAI] = useState(true);
-  let total = daiValue[0] + usdcValue[0] + usdtValue[0];
   const [defaultValDAI, setDefaultValDAI] = useState([100]);
   const [defaultValUSDC, setDefaultValUSDC] = useState([0]);
   const [defaultValUSDT, setDefaultValUSDT] = useState([0]);
+  let total = daiValue[0] + usdcValue[0] + usdtValue[0];
 
   useEffect(() => {
       FetchRequest()
@@ -75,7 +75,14 @@ const InputPage: React.FC = () => {
       getDaiRate();
       getUSDCRate();
       getUSDTRate();
+      setBlendedInterest(daiRate);
+      setEarnings(daiRate*parseInt(input));
     }, [loading]);
+
+    useEffect(() => {
+      blendedRate();
+      annualEarnings();
+    }, [updatingUSDC, updatingUSDT, updatingDAI, loading]);
 
     useEffect(() => {
       //re-render other sliders
@@ -130,23 +137,41 @@ const InputPage: React.FC = () => {
       case 'USDC':
         setUSDCValue(val);
         setUpdatingUSDC(false);
-        console.log("UPDAITNGGGGGG");
         break;
       case 'USDT':
-          setUSDTValue(val);
-          setUpdatingUSDT(false);
-          break;
+        setUSDTValue(val);
+        setUpdatingUSDT(false);
+        break;
       case 'DAI':
-          setDaiValue(val);
-          setUpdatingDAI(false);
-      break;
-      default: console.log("ERROR: NUMBER NOT FOUND");
+        setDaiValue(val);
+        setUpdatingDAI(false);
+        break;
+      default: console.log("ERROR: COIN NAME NOT FOUND");
     }
+  }
+  
+  const blendedRate: () => void = () => {
+    let dai = daiRate / 100;
+    let usdc = usdcRate / 100;
+    let usdt = usdtRate / 100;
+    let daiAmount = getPercentageValue(daiValue[0]).toFixed(2);
+    let usdcAmount = getPercentageValue(usdcValue[0]).toFixed(2);
+    let usdtAmount = getPercentageValue(usdtValue[0]).toFixed(2);
+
+
+    let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / total;
+    let blendedFixed = Math.round((blended + Number.EPSILON) * 100) / 100;
+    setBlendedInterest(blendedFixed);
+  }
+
+  const annualEarnings = () => {
+   let earned = blendedInterest * parseInt(input);
+   setEarnings(earned);
   }
 
     console.log("START:", "TOTAL -", total)
     console.log(usdcValue[0], "%USDC slider percentage", daiValue[0])
-    console.log(getPercentageValue(usdcValue[0]).toFixed(2), "$$ get percentValue")
+    console.log(typeof(getPercentageValue(usdcValue[0]).toFixed(2)), "$$ get percentValue")
     console.log(daiRate, "DAI", usdtRate, "USDT", usdcRate, "USDC")
 
   return (
@@ -180,6 +205,8 @@ const InputPage: React.FC = () => {
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
       />
+      <Text>BLENDED RATE: {blendedInterest}</Text>
+      <Text>APY: ${earnings}</Text>
     </View>
   );
 }
@@ -210,20 +237,5 @@ const styles = StyleSheet.create({
   }
 });
  
-
 export default InputPage;
-
-// useEffect(() => {
-    //   checkMaxSliderValue('USDC')
-    // }, [usdcValue]);
-
-    // useEffect(() => {
-    //   checkMaxSliderValue('DAI')
-    // }, [daiValue]);
-
-    // useEffect(() => {
-    //   checkMaxSliderValue('USDT')
-    // }, [usdtValue]);
-
-
 
