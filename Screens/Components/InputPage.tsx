@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
 import FetchRequest from '../../Services/ApiClient';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import useFloatingHeaderHeight from '@react-navigation/stack/lib/typescript/src/utils/useHeaderHeight';
+import { useAnimatedGestureHandler } from 'react-native-reanimated';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -19,7 +19,7 @@ const InputPage: React.FC = () => {
   let [daiValue, setDaiValue] = useState<number[]>([100]);
   let [usdcValue, setUSDCValue] = useState<number[]>([0]);
   let [usdtValue, setUSDTValue] = useState<number[]>([0]);
-  const [blendedInterest, setBlendedInterest] = useState<number>(0);
+  const [blendedInterest, setBlendedInterest] = useState<number | undefined>(0);
   const [earnings, setEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
   const [updatingUSDC, setUpdatingUSDC] = useState(true);
@@ -81,9 +81,12 @@ const InputPage: React.FC = () => {
 
     useEffect(() => {
       blendedRate();
-      annualEarnings();
-    }, [updatingUSDC, updatingUSDT, updatingDAI, loading]);
+    }, [usdcRate, usdtRate, daiRate, loading]);
 
+    useEffect(() => {
+      annualEarnings();
+    }, [blendedInterest]);
+    
     useEffect(() => {
       //re-render other sliders
       let amountOver = total - 100;
@@ -151,22 +154,26 @@ const InputPage: React.FC = () => {
   }
   
   const blendedRate: () => void = () => {
-    let dai = daiRate / 100;
-    let usdc = usdcRate / 100;
-    let usdt = usdtRate / 100;
-    let daiAmount = getPercentageValue(daiValue[0]).toFixed(2);
-    let usdcAmount = getPercentageValue(usdcValue[0]).toFixed(2);
-    let usdtAmount = getPercentageValue(usdtValue[0]).toFixed(2);
+    if (daiRate && usdcRate && usdtRate) {
+      let dai = daiRate / 100;
+      let usdc = usdcRate / 100;
+      let usdt = usdtRate / 100;
+      let daiAmount = getPercentageValue(daiValue[0]).toFixed(2);
+      let usdcAmount = getPercentageValue(usdcValue[0]).toFixed(2);
+      let usdtAmount = getPercentageValue(usdtValue[0]).toFixed(2);
 
 
-    let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / total;
-    let blendedFixed = Math.round((blended + Number.EPSILON) * 100) / 100;
-    setBlendedInterest(blendedFixed);
+      let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / total;
+      let blendedFixed = Math.round((blended + Number.EPSILON) * 100) / 100;
+      setBlendedInterest(blendedFixed);
+    }
   }
 
   const annualEarnings = () => {
-   let earned = blendedInterest * parseInt(input);
+    if (blendedInterest) {
+      let earned = blendedInterest * parseInt(input);
    setEarnings(earned);
+    }
   }
 
     console.log("START:", "TOTAL -", total)
