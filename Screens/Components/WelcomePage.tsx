@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; 
 import Lollipop from '../../assets/img/lollipop.svg'
 import { TouchableOpacity } from 'react-native';
 import { Dimensions } from 'react-native';
 
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const WelcomePage = () => {
+  const scrollRef = useRef();
+
 
   const downButtonHandler = () => {
     console.log("pressed");
@@ -16,16 +19,16 @@ const WelcomePage = () => {
 
   return (
       <View style={styles.container}>
-      <Text style={styles.header}>Lollipop</Text>
+      <Text style={{ fontFamily: 'Raleway_700Bold', fontSize: 50, color: '#390164'}}>Lollipop</Text>
       <Lollipop style={styles.logo} />
-      <Text style={styles.text}>Calculate your compound interest earnings</Text>
+      <Text style={{fontFamily: 'Raleway_400Regular', fontSize: 25, color: '#390164', textAlign: 'center'}}>Calculate your compound interest earnings</Text>
       <TouchableOpacity
           onPress={() => {
             downButtonHandler();
           }}
           style={styles.slider}
         >
-          <AntDesign style={styles.arrow} name="downcircle" size={55} color="black" />
+          <AntDesign style={styles.arrow} name="arrowdown" size={55} color="black" />
         </TouchableOpacity>
     </View>
   );
@@ -39,19 +42,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: windowHeight,
     width: windowWidth,
-  },
-  header: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#390164',
-    fontWeight: '700',
-    fontSize: 50,
-  },
-  text: {
-    textAlign: 'center',
-    color: '#390164',
-    fontWeight: '700',
-    fontSize: 25,
   },
   arrow: {
     color: '#390164',

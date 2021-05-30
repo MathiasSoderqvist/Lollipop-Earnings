@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, unstable_batchedUpdates } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import 'react-native-gesture-handler';
 import FetchRequest from '../../Services/ApiClient';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import { useAnimatedGestureHandler } from 'react-native-reanimated';
-
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -36,6 +34,70 @@ const InputPage: React.FC = () => {
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    getDaiRate();
+    getUSDCRate();
+    getUSDTRate();
+    setBlendedInterest(daiRate);
+    setEarnings(daiRate*parseInt(input));
+  }, [loading]);
+
+  useEffect(() => {
+    blendedRate();
+  }, [usdcValue, usdtValue, daiValue, usdcRate, usdtRate, daiRate, input]);
+
+  useEffect(() => {
+    annualEarnings();
+  }, [blendedInterest, input]);
+  
+  useEffect(() => {
+    //re-render other sliders
+    let amountOver = total - 100;
+    
+    if (usdtValue[0] > amountOver) {
+      setUSDTValue([usdtValue[0] -= amountOver]);
+    }
+    else {
+      setUSDCValue([100 - usdtValue[0]]);
+      setUSDTValue([0]);
+     } 
+      setUpdatingDAI(true);
+      setDefaultValUSDC(usdcValue);
+      setDefaultValUSDT(usdtValue);
+  }, [updatingDAI]);
+
+  useEffect(() => {
+    //re-render other sliders
+    let amountOver = total - 100;
+    if (total > 100) {
+      if (daiValue[0] > amountOver) {
+        setDaiValue([daiValue[0] -= amountOver]);
+       } 
+       else {
+         setUSDTValue([100 - daiValue[0]]);
+         setDaiValue([0]);
+        } 
+      }
+      setUpdatingUSDC(true);
+      setDefaultValDAI(daiValue);
+      setDefaultValUSDT(usdtValue);
+  }, [updatingUSDC]);
+
+  useEffect(() => {
+    //re-render other sliders
+    let amountOver = total - 100;
+    if (usdcValue[0] > amountOver) {
+      setUSDCValue([usdcValue[0] -= amountOver]);
+    }
+    else {
+      setDaiValue([100 - usdcValue[0]]);
+      setUSDCValue([0]);
+     }
+      setUpdatingUSDT(true);
+      setDefaultValDAI(daiValue);
+      setDefaultValUSDC(usdcValue);
+  }, [updatingUSDT]);
  
     const getRates = (id: string) => {
       for (let i = 0; i < coins.length; i++) {
@@ -57,7 +119,6 @@ const InputPage: React.FC = () => {
       let rate = Math.round((res + Number.EPSILON) * 100) / 100;
       setUSDCRate(rate);
     }
-      
     
     const getUSDTRate: () => void = () => {
       let res = getRates('USDT');
@@ -70,70 +131,6 @@ const InputPage: React.FC = () => {
       let res = (val / 100) * amount;
       return res;
     }
-    
-    useEffect(() => {
-      getDaiRate();
-      getUSDCRate();
-      getUSDTRate();
-      setBlendedInterest(daiRate);
-      setEarnings(daiRate*parseInt(input));
-    }, [loading]);
-
-    useEffect(() => {
-      blendedRate();
-    }, [usdcRate, usdtRate, daiRate, loading]);
-
-    useEffect(() => {
-      annualEarnings();
-    }, [blendedInterest]);
-    
-    useEffect(() => {
-      //re-render other sliders
-      let amountOver = total - 100;
-      
-      if (usdtValue[0] > amountOver) {
-        setUSDTValue([usdtValue[0] -= amountOver]);
-      }
-      else {
-        setUSDCValue([100 - usdtValue[0]]);
-        setUSDTValue([0]);
-       } 
-        setUpdatingDAI(true);
-        setDefaultValUSDC(usdcValue);
-        setDefaultValUSDT(usdcValue);
-    }, [updatingDAI]);
-
-    useEffect(() => {
-      //re-render other sliders
-      let amountOver = total - 100;
-      if (total > 100) {
-        if (daiValue[0] > amountOver) {
-          setDaiValue([daiValue[0] -= amountOver]);
-         } 
-         else {
-           setUSDTValue([100 - daiValue[0]]);
-           setDaiValue([0]);
-          } 
-        }
-        setUpdatingUSDC(true);
-        setDefaultValDAI(daiValue);
-        setDefaultValUSDT(usdtValue);
-    }, [updatingUSDC]);
-
-    useEffect(() => {
-      //re-render other sliders
-      let amountOver = total - 100;
-      if (usdcValue[0] > amountOver) {
-        setUSDCValue([usdcValue[0] -= amountOver]);
-      }
-      else {
-        setDaiValue([100 - usdcValue[0]]);
-        setUSDCValue([0]);
-       }
-        setUpdatingUSDT(true);
-        setDefaultValDAI(daiValue);
-        setDefaultValUSDC(usdcValue);
-    }, [updatingUSDT]);
 
     const checkMaxSliderValue = (coin: string, val: number[]) => {
     switch (coin) {
@@ -161,10 +158,11 @@ const InputPage: React.FC = () => {
       let daiAmount = getPercentageValue(daiValue[0]).toFixed(2);
       let usdcAmount = getPercentageValue(usdcValue[0]).toFixed(2);
       let usdtAmount = getPercentageValue(usdtValue[0]).toFixed(2);
+      let sum = parseInt(daiAmount) + parseInt(usdcAmount) + parseInt(usdtAmount);
 
-
-      let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / total;
+      let blended = (dai * parseInt(daiAmount)) + (usdc * parseInt(usdcAmount)) + (usdt * parseInt(usdtAmount)) / sum;
       let blendedFixed = Math.round((blended + Number.EPSILON) * 100) / 100;
+
       setBlendedInterest(blendedFixed);
     }
   }
@@ -172,7 +170,8 @@ const InputPage: React.FC = () => {
   const annualEarnings = () => {
     if (blendedInterest) {
       let earned = blendedInterest * parseInt(input);
-   setEarnings(earned);
+      let rounded = Math.round((earned + Number.EPSILON) * 100) / 100;
+      setEarnings(rounded/ 100);
     }
   }
 
@@ -212,7 +211,7 @@ const InputPage: React.FC = () => {
       step={0.1}
       onValuesChangeFinish={(values) => checkMaxSliderValue('USDT', values)}
       />
-      <Text>BLENDED RATE: {blendedInterest}</Text>
+      <Text>BLENDED RATE: {blendedInterest}%</Text>
       <Text>APY: ${earnings}</Text>
     </View>
   );
