@@ -27,7 +27,7 @@ const App: React.FC = () => {
         headerShown: false
         }}>
         <Stack.Screen
-          name="Home"
+          name='Home'
           component={ScrollScreen}
         />
       </Stack.Navigator>

@@ -15,10 +15,10 @@ const windowHeight = Dimensions.get('window').height;
 const InputPage: React.FC = () => {
   const [input, onChangeInput] = useState<string>('1000');
   const [coins, setCoins] = useState([]);
-  const [daiRate, setDaiRate] = useState<number | undefined>(undefined);
+  const [daiRate, setDAIRate] = useState<number | undefined>(undefined);
   const [usdcRate, setUSDCRate] = useState<number | undefined>(undefined);
   const [usdtRate, setUSDTRate] = useState<number | undefined>(undefined);
-  let [daiValue, setDaiValue] = useState<number[]>([100]);
+  let [daiValue, setDAIValue] = useState<number[]>([100]);
   let [usdcValue, setUSDCValue] = useState<number[]>([0]);
   let [usdtValue, setUSDTValue] = useState<number[]>([0]);
   const [blendedInterest, setBlendedInterest] = useState<number | undefined>(0);
@@ -54,46 +54,48 @@ const InputPage: React.FC = () => {
   }, [blendedInterest, input]);
   
   useEffect(() => {
-    //re-render other sliders
     let amountOver = total - 100;
-    
-    if (usdtValue[0] > amountOver) {
-      setUSDTValue([usdtValue[0] -= amountOver]);
-    }
-    else {
-      setUSDCValue([100 - usdtValue[0]]);
-      setUSDTValue([0]);
+
+    if (total > 100) {
+      if (usdtValue[0] > amountOver) {
+        setUSDTValue([usdtValue[0] -= amountOver]);
+      } else {
+        setUSDCValue([usdcValue[0] + usdtValue[0] - amountOver]);
+        setUSDTValue([0]);
      } 
+    }
       setUpdatingDAI(true);
       setDefaultValUSDC(usdcValue);
       setDefaultValUSDT(usdtValue);
-  }, [updatingDAI]);
+    }, [updatingDAI]);
 
   useEffect(() => {
-    //re-render other sliders
     let amountOver = total - 100;
+
     if (total > 100) {
       if (daiValue[0] > amountOver) {
-        setDaiValue([daiValue[0] -= amountOver]);
+        setDAIValue([daiValue[0] -= amountOver]);
       } else {
-         setUSDTValue([100 - daiValue[0]]);
-         setDaiValue([0]);
+         setUSDTValue([usdtValue[0] + daiValue[0] - amountOver]);
+         setDAIValue([0]);
         } 
-      }
+    }
       setUpdatingUSDC(true);
       setDefaultValDAI(daiValue);
       setDefaultValUSDT(usdtValue);
   }, [updatingUSDC]);
 
   useEffect(() => {
-    //re-render other sliders
     let amountOver = total - 100;
-    if (usdcValue[0] > amountOver) {
-      setUSDCValue([usdcValue[0] -= amountOver]);
-    } else {
-      setDaiValue([100 - usdcValue[0]]);
-      setUSDCValue([0]);
-     }
+
+    if (total > 100) {
+      if (usdcValue[0] > amountOver) {
+        setUSDCValue([usdcValue[0] -= amountOver]);
+      } else {
+        setDAIValue([daiValue[0] + usdcValue[0] - amountOver]);
+        setUSDCValue([0]);
+      }
+    }
       setUpdatingUSDT(true);
       setDefaultValDAI(daiValue);
       setDefaultValUSDC(usdcValue);
@@ -101,29 +103,35 @@ const InputPage: React.FC = () => {
  
   const getRates = (id: string) => {
     for (let i = 0; i < coins.length; i++) {
-      let coin = coins[i]["underlying_symbol"];
+      let coin = coins[i]['underlying_symbol'];
       if (coin === id) {
-        return coins[i]["supply_rate"]['value']*100;
+        return coins[i]['supply_rate']['value']*100;
       }
     }
   }
 
   const getDaiRate: () => void = () => {
     let res = getRates('DAI');
-    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-    setDaiRate(rate);
+    if (res) {
+      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+      setDAIRate(rate);
+    }
   }
     
   const getUSDCRate: () => void = () => {
     let res = getRates('USDC');
-    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-    setUSDCRate(rate);
+    if (res) {
+      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+      setUSDCRate(rate);
+    }
   }
     
   const getUSDTRate: () => void = () => {
     let res = getRates('USDT');
-    let rate = Math.round((res + Number.EPSILON) * 100) / 100;
-    setUSDTRate(rate);
+    if (res) {
+      let rate = Math.round((res + Number.EPSILON) * 100) / 100;
+      setUSDTRate(rate);
+    }
   }
 
   const getPercentageValue = (val: number) => {
@@ -143,7 +151,7 @@ const InputPage: React.FC = () => {
         setUpdatingUSDT(false);
         break;
       case 'DAI':
-        setDaiValue(val);
+        setDAIValue(val);
         setUpdatingDAI(false);
         break;
       default: console.log("ERROR: COIN NAME NOT FOUND");
@@ -182,15 +190,16 @@ const InputPage: React.FC = () => {
           fontFamily: 'Raleway_700Bold', 
           fontSize: 25, color: '#390164', 
           textAlign: 'center', 
-          bottom: '10%'}}>
+          bottom: '10%'
+        }}>
             AMOUNT ($USD)
         </Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeInput}
           value={input}
-          placeholder="amount"
-          keyboardType="numeric"
+          placeholder='amount'
+          keyboardType='numeric'
         />
         <Text style={{
           fontFamily: 'Raleway_400Regular', 
@@ -278,7 +287,7 @@ const styles = StyleSheet.create({
     bottom: '10%',
     borderRadius: 20,
     alignItems: 'center',
-    backgroundColor: "rgba(139, 209, 211, 0.3)",
+    backgroundColor: 'rgba(139, 209, 211, 0.3)',
   },
 });
  

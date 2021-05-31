@@ -18,7 +18,7 @@ const WelcomePage = () => {
       <TouchableOpacity
           style={styles.slider}
         >
-          <AntDesign style={styles.arrow} name="arrowdown" size={55} color="black" />
+          <AntDesign style={styles.arrow} name='arrowdown' size={55} color='black' />
         </TouchableOpacity>
     </View>
   );
